@@ -1,0 +1,3 @@
+[submodule "social-media-proto"]
+	path = social-media-proto
+	url = git@github.com:PNYwise/social-media-proto.git

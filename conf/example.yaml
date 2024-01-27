@@ -1,0 +1,6 @@
+id: "example-service"
+name: "example-service"
+token: "ini-token"
+config-service:
+  host: "localhost"
+  port: "50050"

@@ -31,7 +31,7 @@ const (
 type LikeClient interface {
 	Set(ctx context.Context, in *LikeRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	Unset(ctx context.Context, in *LikeRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	GetByPostUuid(ctx context.Context, in *Uuid, opts ...grpc.CallOption) (*LikeResponse, error)
+	GetByPostUuid(ctx context.Context, in *QueryLikeRequest, opts ...grpc.CallOption) (*LikeResponse, error)
 }
 
 type likeClient struct {
@@ -60,7 +60,7 @@ func (c *likeClient) Unset(ctx context.Context, in *LikeRequest, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *likeClient) GetByPostUuid(ctx context.Context, in *Uuid, opts ...grpc.CallOption) (*LikeResponse, error) {
+func (c *likeClient) GetByPostUuid(ctx context.Context, in *QueryLikeRequest, opts ...grpc.CallOption) (*LikeResponse, error) {
 	out := new(LikeResponse)
 	err := c.cc.Invoke(ctx, Like_GetByPostUuid_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -75,7 +75,7 @@ func (c *likeClient) GetByPostUuid(ctx context.Context, in *Uuid, opts ...grpc.C
 type LikeServer interface {
 	Set(context.Context, *LikeRequest) (*empty.Empty, error)
 	Unset(context.Context, *LikeRequest) (*empty.Empty, error)
-	GetByPostUuid(context.Context, *Uuid) (*LikeResponse, error)
+	GetByPostUuid(context.Context, *QueryLikeRequest) (*LikeResponse, error)
 	mustEmbedUnimplementedLikeServer()
 }
 
@@ -89,7 +89,7 @@ func (UnimplementedLikeServer) Set(context.Context, *LikeRequest) (*empty.Empty,
 func (UnimplementedLikeServer) Unset(context.Context, *LikeRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unset not implemented")
 }
-func (UnimplementedLikeServer) GetByPostUuid(context.Context, *Uuid) (*LikeResponse, error) {
+func (UnimplementedLikeServer) GetByPostUuid(context.Context, *QueryLikeRequest) (*LikeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByPostUuid not implemented")
 }
 func (UnimplementedLikeServer) mustEmbedUnimplementedLikeServer() {}
@@ -142,7 +142,7 @@ func _Like_Unset_Handler(srv interface{}, ctx context.Context, dec func(interfac
 }
 
 func _Like_GetByPostUuid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Uuid)
+	in := new(QueryLikeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -154,7 +154,7 @@ func _Like_GetByPostUuid_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: Like_GetByPostUuid_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LikeServer).GetByPostUuid(ctx, req.(*Uuid))
+		return srv.(LikeServer).GetByPostUuid(ctx, req.(*QueryLikeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

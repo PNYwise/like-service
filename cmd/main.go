@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/PNYwise/like-service/internal"
 	"github.com/PNYwise/like-service/internal/config"
 	"github.com/PNYwise/like-service/internal/domain"
 	like_service "github.com/PNYwise/like-service/proto"
@@ -86,9 +87,7 @@ func main() {
 	srv := grpc.NewServer()
 
 	// Initialize gRPC server based on retrieved configuration
-	//
-	//
-	//
+	internal.InitGrpc(srv, extConf, db)
 
 	// Start server
 	serverPort := strconv.Itoa(extConf.App.Port)

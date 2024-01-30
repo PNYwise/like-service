@@ -2,6 +2,9 @@ package handler
 
 import (
 	"context"
+	"log"
+
+	"errors"
 
 	"github.com/PNYwise/like-service/internal/domain"
 	like_service "github.com/PNYwise/like-service/proto"
@@ -22,8 +25,31 @@ func NewLikeHandler(extConf *domain.ExtConf, likeService domain.ILikeService) *l
 }
 
 // GetByPostUuid implements like_service.LikeServer.
-func (*likeHandler) GetByPostUuid(context.Context, *like_service.QueryLikeRequest) (*like_service.LikeResponse, error) {
-	panic("unimplemented")
+func (l *likeHandler) GetByPostUuid(ctx context.Context, request *like_service.QueryLikeRequest) (*like_service.LikeResponse, error) {
+	data, pagination, err := l.likeService.GetByPostUuid(ctx, request.GetPostUuid(), request.GetPage())
+	if err != nil {
+		log.Fatal(err)
+		return nil, errors.New("internal server error")
+	}
+	response := make([]*like_service.UserLikeResponse, len(*data))
+
+	for i, resp := range *data {
+		protoResp := &like_service.UserLikeResponse{
+			UserUuid: resp.UserUuid,
+			Name:     "Jhon Doe",
+		}
+		response[i] = protoResp
+	}
+
+	return &like_service.LikeResponse{
+		PostUuid:         request.GetPostUuid(),
+		UserLikeResponse: response,
+		Pagiation: &like_service.Pagination{
+			Page:        request.GetPage(),
+			TotalRecord: pagination.ItemCount,
+			TotalPage:   pagination.PageCount,
+		},
+	}, nil
 }
 
 // Set implements like_service.LikeServer.

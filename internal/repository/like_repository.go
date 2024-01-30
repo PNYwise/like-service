@@ -18,7 +18,7 @@ func NewLikeRepository(db *pgx.Conn) domain.ILikeRepository {
 }
 
 // GetByPostUuid implements domain.ILikeRepository.
-func (*likeRepository) GetByPostUuid(ctx context.Context, uuid string) (*[]domain.Like, error) {
+func (*likeRepository) GetByPostUuid(ctx context.Context, uuid string, page uint64) (*[]domain.Like, uint64, error) {
 	panic("unimplemented")
 }
 
@@ -28,6 +28,6 @@ func (*likeRepository) Set(ctx context.Context, like *domain.Like) error {
 }
 
 // Unset implements domain.ILikeRepository.
-func (*likeRepository) Unset(ctx context.Context, userUuid string, PostUuid string) error {
+func (*likeRepository) Unset(ctx context.Context, userUuid string, postUuid string) error {
 	panic("unimplemented")
 }

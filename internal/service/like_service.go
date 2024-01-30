@@ -17,7 +17,7 @@ type likeService struct {
 }
 
 // GetByPostUuid implements domain.ILikeService.
-func (*likeService) GetByPostUuid(context.Context, string) (*[]domain.Like, error) {
+func (*likeService) GetByPostUuid(ctx context.Context, uuid string, page uint64) (*[]domain.Like, *domain.Pagination, error) {
 	panic("unimplemented")
 }
 

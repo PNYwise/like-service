@@ -10,12 +10,14 @@ import (
 
 type likeHandler struct {
 	like_service.UnimplementedLikeServer
-	extConf *domain.ExtConf
+	likeService domain.ILikeService
+	extConf     *domain.ExtConf
 }
 
-func NewLikeHandler(extConf *domain.ExtConf) *likeHandler {
+func NewLikeHandler(extConf *domain.ExtConf, likeService domain.ILikeService) *likeHandler {
 	return &likeHandler{
-		extConf: extConf,
+		extConf:     extConf,
+		likeService: likeService,
 	}
 }
 

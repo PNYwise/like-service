@@ -14,7 +14,9 @@ type Like struct {
 	DeletedAt time.Time
 }
 
-type CreateLikeRequest struct {
+type SetLikeRequest struct {
+	UserUuid string
+	PostUuid string
 }
 
 type Pagination struct {
@@ -36,6 +38,6 @@ type ILikeRepository interface {
 
 type ILikeService interface {
 	GetByPostUuid(context.Context, string, uint64) (*[]Like, *Pagination, error)
-	Set(context.Context, *CreateLikeRequest) error
+	Set(context.Context, *SetLikeRequest) error
 	Unset(context.Context, string, string) error
 }

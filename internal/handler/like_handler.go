@@ -8,6 +8,7 @@ import (
 
 	"github.com/PNYwise/like-service/internal/domain"
 	like_service "github.com/PNYwise/like-service/proto"
+	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -53,8 +54,15 @@ func (l *likeHandler) GetByPostUuid(ctx context.Context, request *like_service.Q
 }
 
 // Set implements like_service.LikeServer.
-func (*likeHandler) Set(context.Context, *like_service.LikeRequest) (*emptypb.Empty, error) {
-	panic("unimplemented")
+func (l *likeHandler) Set(ctx context.Context, request *like_service.LikeRequest) (*emptypb.Empty, error) {
+	setLikeRequest := &domain.SetLikeRequest{
+		UserUuid: request.GetUserUuid(),
+		PostUuid: request.GetPostUuid(),
+	}
+	if err := l.likeService.Set(ctx, setLikeRequest); err != nil {
+		return nil, errors.New("Internal Server Error")
+	}
+	return &empty.Empty{}, nil
 }
 
 // Unset implements like_service.LikeServer.

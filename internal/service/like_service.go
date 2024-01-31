@@ -22,8 +22,13 @@ func (*likeService) GetByPostUuid(ctx context.Context, uuid string, page uint64)
 }
 
 // Set implements domain.ILikeService.
-func (*likeService) Set(context.Context, *domain.CreateLikeRequest) error {
-	panic("unimplemented")
+func (l *likeService) Set(ctx context.Context, request *domain.SetLikeRequest) error {
+	like := &domain.Like{
+		UserUuid: request.UserUuid,
+		PostUuid: request.PostUuid,
+	}
+	err := l.likeRepo.Set(ctx, like)
+	return err
 }
 
 // Unset implements domain.ILikeService.

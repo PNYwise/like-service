@@ -60,12 +60,15 @@ func (l *likeHandler) Set(ctx context.Context, request *like_service.LikeRequest
 		PostUuid: request.GetPostUuid(),
 	}
 	if err := l.likeService.Set(ctx, setLikeRequest); err != nil {
-		return nil, errors.New("Internal Server Error")
+		return nil, errors.New(err.Error())
 	}
 	return &empty.Empty{}, nil
 }
 
 // Unset implements like_service.LikeServer.
-func (*likeHandler) Unset(context.Context, *like_service.LikeRequest) (*emptypb.Empty, error) {
-	panic("unimplemented")
+func (l *likeHandler) Unset(ctx context.Context, request *like_service.LikeRequest) (*emptypb.Empty, error) {
+	if err := l.likeService.Unset(ctx, request.GetUserUuid(), request.GetPostUuid()); err != nil {
+		return nil, errors.New(err.Error())
+	}
+	return &empty.Empty{}, nil
 }

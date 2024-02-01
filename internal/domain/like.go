@@ -34,6 +34,7 @@ type ILikeRepository interface {
 	GetByPostUuid(context.Context, string, uint64) (*[]Like, uint64, error)
 	Set(context.Context, *Like) error
 	Unset(context.Context, string, string) error
+	Exist(context.Context, string, string) (bool, error)
 }
 
 type ILikeService interface {

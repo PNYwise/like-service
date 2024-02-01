@@ -20,8 +20,25 @@ func NewLikeRepository(db *pgx.Conn) domain.ILikeRepository {
 }
 
 // GetByPostUuid implements domain.ILikeRepository.
-func (*likeRepository) GetByPostUuid(ctx context.Context, uuid string, page uint64) (*[]domain.Like, uint64, error) {
-	panic("unimplemented")
+func (l *likeRepository) GetByPostUuid(ctx context.Context, postUuid string, page uint64) (*[]domain.Like, uint64, error) {
+	query := "SELECT uuid, user_uuid, post_uuid, created_at, deleted_at FROM likes WHERE post_uuid = $1 OFFSET $2 LIMIT $3"
+	limit := uint64(15)
+	offset := (page - 1) * limit
+	row, err := l.db.Query(ctx, query, postUuid, offset, limit)
+	if err != nil {
+		log.Fatalf("Error executing query: %v", err)
+		return nil, 0, err
+	}
+	var likes []domain.Like
+	for row.Next() {
+		var like domain.Like
+		if err := row.Scan(&like.Uuid, &like.UserUuid, &like.PostUuid, &like.CreatedAt, &like.DeletedAt); err != nil {
+			log.Fatalf("Error Scaning query: %v", err)
+			return nil, 0, err
+		}
+		likes = append(likes, like)
+	}
+	return &likes, limit, nil
 }
 
 // Set implements domain.ILikeRepository.

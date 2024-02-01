@@ -18,8 +18,16 @@ type likeService struct {
 }
 
 // GetByPostUuid implements domain.ILikeService.
-func (*likeService) GetByPostUuid(ctx context.Context, uuid string, page uint64) (*[]domain.Like, *domain.Pagination, error) {
-	panic("unimplemented")
+func (l *likeService) GetByPostUuid(ctx context.Context, uuid string, page uint64) (*[]domain.Like, *domain.Pagination, error) {
+	likes, limit, err := l.likeRepo.GetByPostUuid(ctx, uuid, page)
+	if err != nil {
+		return nil, nil, err
+	}
+	return likes, &domain.Pagination{
+		Take:      limit,
+		ItemCount: uint64(0),
+		PageCount: uint64(0),
+	}, nil
 }
 
 // Set implements domain.ILikeService.

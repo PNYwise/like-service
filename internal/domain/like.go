@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
@@ -10,8 +11,8 @@ type Like struct {
 	UserUuid  string
 	PostUuid  string
 	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	UpdatedAt sql.NullTime
+	DeletedAt sql.NullTime
 }
 
 type SetLikeRequest struct {

@@ -32,14 +32,14 @@ func (p *Pagination) Skip() uint64 {
 }
 
 type ILikeRepository interface {
-	GetByPostUuid(context.Context, string, uint64) (*[]Like, uint64, error)
-	Set(context.Context, *Like) error
-	Unset(context.Context, string, string) error
-	Exist(context.Context, string, string) (bool, error)
+	GetByPostUuid(ctx context.Context, postUuid string, page uint64) (*[]Like, uint64, error)
+	Set(ctx context.Context, like *Like) error
+	Unset(ctx context.Context, userUuid string, postUuid string) error
+	Exist(ctx context.Context, userUuid string, postUuid string) (bool, error)
 }
 
 type ILikeService interface {
-	GetByPostUuid(context.Context, string, uint64) (*[]Like, *Pagination, error)
-	Set(context.Context, *SetLikeRequest) error
-	Unset(context.Context, string, string) error
+	GetByPostUuid(ctx context.Context, postUuid string, page uint64) (*[]Like, *Pagination, error)
+	Set(ctx context.Context, request *SetLikeRequest) error
+	Unset(ctx context.Context, userUuid string, postUuid string) error
 }

@@ -12,7 +12,7 @@ type LikeRepositoryMock struct {
 	mock.Mock
 }
 
-// ReadAllByUserId mocks the GetByPostUuid method of ILikeRepository
+// GetByPostUuid mocks the GetByPostUuid method of ILikeRepository
 func (m *LikeRepositoryMock) GetByPostUuid(ctx context.Context, postUuid string, page uint64) (*[]domain.Like, uint64, error) {
 	args := m.Called(ctx, postUuid, page)
 	return args.Get(0).(*[]domain.Like), args.Get(1).(uint64), args.Error(2)

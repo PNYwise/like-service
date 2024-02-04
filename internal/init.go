@@ -11,8 +11,9 @@ import (
 )
 
 func InitGrpc(srv *grpc.Server, extConf *domain.ExtConf, db *pgx.Conn, postClient *grpc.ClientConn) {
+	postRepository := repository.NewPostRepository(postClient)
 	likeRepository := repository.NewLikeRepository(db)
-	likeService := service.NewLikeService(likeRepository)
+	likeService := service.NewLikeService(likeRepository, postRepository)
 	likeHandlers := handler.NewLikeHandler(extConf, likeService)
 	like_service.RegisterLikeServer(srv, likeHandlers)
 }

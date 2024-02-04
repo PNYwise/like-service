@@ -7,14 +7,16 @@ import (
 	"github.com/PNYwise/like-service/internal/domain"
 )
 
-func NewLikeService(likeRepo domain.ILikeRepository) domain.ILikeService {
+func NewLikeService(likeRepo domain.ILikeRepository, postRepo domain.IPostRepository) domain.ILikeService {
 	return &likeService{
 		likeRepo: likeRepo,
+		postRepo: postRepo,
 	}
 }
 
 type likeService struct {
 	likeRepo domain.ILikeRepository
+	postRepo domain.IPostRepository
 }
 
 // GetByPostUuid implements domain.ILikeService.
@@ -32,7 +34,13 @@ func (l *likeService) GetByPostUuid(ctx context.Context, postUuid string, page u
 
 // Set implements domain.ILikeService.
 func (l *likeService) Set(ctx context.Context, request *domain.SetLikeRequest) error {
-	// TODO: validation
+	exist, err := l.postRepo.Exist(ctx, request.PostUuid)
+	if err != nil {
+		return errors.New("Internal Server Error")
+	}
+	if !exist {
+		return errors.New("Post Not Found")
+	}
 	like := &domain.Like{
 		UserUuid: request.UserUuid,
 		PostUuid: request.PostUuid,
@@ -45,7 +53,11 @@ func (l *likeService) Set(ctx context.Context, request *domain.SetLikeRequest) e
 
 // Unset implements domain.ILikeService.
 func (l *likeService) Unset(ctx context.Context, userUuid string, postUuid string) error {
-	if exist, _ := l.likeRepo.Exist(ctx, userUuid, postUuid); !exist {
+	exist, err := l.likeRepo.Exist(ctx, userUuid, postUuid)
+	if err != nil {
+		return errors.New("Internal Server Error")
+	}
+	if !exist {
 		return errors.New("Like not found")
 	}
 	if err := l.likeRepo.Unset(ctx, userUuid, postUuid); err != nil {

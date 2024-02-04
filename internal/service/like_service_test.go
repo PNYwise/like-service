@@ -14,9 +14,10 @@ import (
 func TestGetByPostUuid(t *testing.T) {
 	// Create a mock repository
 	mockRepo := new(_mock.LikeRepositoryMock)
+	mockPostRepo := new(_mock.PostRepositoryMock)
 
 	// Create a like service with the mock repository
-	likeService := NewLikeService(mockRepo)
+	likeService := NewLikeService(mockRepo, mockPostRepo)
 
 	// Define a fake UUID
 	fakeUuid := uuid.New().String()
@@ -64,9 +65,10 @@ func TestGetByPostUuid(t *testing.T) {
 func TestSet(t *testing.T) {
 	// Create a mock repository
 	mockRepo := new(_mock.LikeRepositoryMock)
+	mockPostRepo := new(_mock.PostRepositoryMock)
 
 	// Create a like service with the mock repository
-	likeService := NewLikeService(mockRepo)
+	likeService := NewLikeService(mockRepo, mockPostRepo)
 
 	fakeUserUuid := uuid.New().String()
 	fakePostUuid := uuid.New().String()
@@ -86,11 +88,15 @@ func TestSet(t *testing.T) {
 	// Expect the Set method to be called with the correct argument
 	mockRepo.On("Set", ctx, &fakelikes).Return(nil)
 
+	// Expect the Exist method to be called with the correct argument
+	mockPostRepo.On("Exist", ctx, fakePostUuid).Return(true, nil)
+
 	// Call the Set method of the like service
 	err := likeService.Set(ctx, &likeRequest)
 
 	// Assert that the mock repository's Set method was called with the correct argument
 	mockRepo.AssertExpectations(t)
+	mockPostRepo.AssertExpectations(t)
 
 	// Assert that the returned like and error match the expected values
 	assert.NoError(t, err)
@@ -99,9 +105,10 @@ func TestSet(t *testing.T) {
 func TestUnset(t *testing.T) {
 	// Create a mock repository
 	mockRepo := new(_mock.LikeRepositoryMock)
+	mockPostRepo := new(_mock.PostRepositoryMock)
 
 	// Create a like service with the mock repository
-	postService := NewLikeService(mockRepo)
+	postService := NewLikeService(mockRepo, mockPostRepo)
 
 	// Define a fake UUID
 	fakeUserUuid := uuid.New().String()

@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func InitGrpc(srv *grpc.Server, extConf *domain.ExtConf, db *pgx.Conn) {
+func InitGrpc(srv *grpc.Server, extConf *domain.ExtConf, db *pgx.Conn, postClient *grpc.ClientConn) {
 	likeRepository := repository.NewLikeRepository(db)
 	likeService := service.NewLikeService(likeRepository)
 	likeHandlers := handler.NewLikeHandler(extConf, likeService)

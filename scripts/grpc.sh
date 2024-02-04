@@ -5,4 +5,5 @@ protoc --proto_path=social-media-proto \
     --go-grpc_opt=paths=source_relative \
     social-media-proto/base.proto \
     social-media-proto/like.proto \
-    social-media-proto/config.proto
+    social-media-proto/config.proto \
+    social-media-proto/post.proto

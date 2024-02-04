@@ -83,11 +83,22 @@ func main() {
 	}
 	log.Println("Connected to Database")
 
+	// Dial the gRPC post service
+	postGrpcConn, err := grpc.Dial(
+		fmt.Sprintf("%s:%d", extConf.Post.Host, extConf.Post.Port),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalf("Failed to connect to Post Service gRPC server: %v", err)
+	}
+	log.Println("Connected to Post Service gRPC server")
+	defer postGrpcConn.Close()
+
 	// Initialize gRPC server
 	srv := grpc.NewServer()
 
 	// Initialize gRPC server based on retrieved configuration
-	internal.InitGrpc(srv, extConf, db)
+	internal.InitGrpc(srv, extConf, db, postGrpcConn)
 
 	// Start server
 	serverPort := strconv.Itoa(extConf.App.Port)

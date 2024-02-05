@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	"github.com/PNYwise/like-service/internal/domain"
 	like_service "github.com/PNYwise/like-service/proto"
@@ -24,7 +24,7 @@ func (p *postRepository) Exist(ctx context.Context, postUuid string) (bool, erro
 	in := &like_service.Uuid{Uuid: postUuid}
 	response, err := p.postClient.Exist(ctx, in)
 	if err != nil {
-		log.Fatalf("Error executing Grpc: %v", err)
+		fmt.Printf("Error executing Grpc: %v", err)
 		return false, err
 	}
 	return response.GetValue(), nil

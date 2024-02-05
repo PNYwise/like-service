@@ -75,7 +75,7 @@ func TestSet(t *testing.T) {
 	ctx := context.Background()
 
 	// Create a sample like request
-	likeRequest := domain.SetLikeRequest{
+	likeRequest := domain.LikeRequest{
 		UserUuid: fakeUserUuid,
 		PostUuid: fakePostUuid,
 	}
@@ -87,6 +87,7 @@ func TestSet(t *testing.T) {
 
 	// Expect the Set method to be called with the correct argument
 	mockRepo.On("Set", ctx, &fakelikes).Return(nil)
+	mockRepo.On("Exist", ctx, likeRequest.UserUuid, likeRequest.PostUuid).Return(false, nil)
 
 	// Expect the Exist method to be called with the correct argument
 	mockPostRepo.On("Exist", ctx, fakePostUuid).Return(true, nil)
@@ -113,6 +114,10 @@ func TestUnset(t *testing.T) {
 	// Define a fake UUID
 	fakeUserUuid := uuid.New().String()
 	fakePostUuid := uuid.New().String()
+	likeRequest := domain.LikeRequest{
+		UserUuid: fakeUserUuid,
+		PostUuid: fakePostUuid,
+	}
 
 	ctx := context.Background()
 
@@ -123,7 +128,7 @@ func TestUnset(t *testing.T) {
 	mockRepo.On("Unset", ctx, fakeUserUuid, fakePostUuid).Return(nil)
 
 	// Call the Unset method of the likes service
-	err := postService.Unset(ctx, fakeUserUuid, fakePostUuid)
+	err := postService.Unset(ctx, &likeRequest)
 
 	// Assert that the mock repository's Unset method was called with the correct argument
 	mockRepo.AssertExpectations(t)

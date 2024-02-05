@@ -55,7 +55,7 @@ func (l *likeHandler) GetByPostUuid(ctx context.Context, request *like_service.Q
 
 // Set implements like_service.LikeServer.
 func (l *likeHandler) Set(ctx context.Context, request *like_service.LikeRequest) (*emptypb.Empty, error) {
-	setLikeRequest := &domain.SetLikeRequest{
+	setLikeRequest := &domain.LikeRequest{
 		UserUuid: request.GetUserUuid(),
 		PostUuid: request.GetPostUuid(),
 	}
@@ -67,7 +67,11 @@ func (l *likeHandler) Set(ctx context.Context, request *like_service.LikeRequest
 
 // Unset implements like_service.LikeServer.
 func (l *likeHandler) Unset(ctx context.Context, request *like_service.LikeRequest) (*emptypb.Empty, error) {
-	if err := l.likeService.Unset(ctx, request.GetUserUuid(), request.GetPostUuid()); err != nil {
+	likeRequest := &domain.LikeRequest{
+		UserUuid: request.GetUserUuid(),
+		PostUuid: request.GetPostUuid(),
+	}
+	if err := l.likeService.Unset(ctx, likeRequest); err != nil {
 		return nil, errors.New(err.Error())
 	}
 	return &empty.Empty{}, nil

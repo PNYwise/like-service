@@ -15,9 +15,9 @@ type Like struct {
 	DeletedAt sql.NullTime
 }
 
-type SetLikeRequest struct {
-	UserUuid string
-	PostUuid string
+type LikeRequest struct {
+	UserUuid string `validate:"required,uuid4"`
+	PostUuid string `validate:"required,uuid4"`
 }
 
 type Pagination struct {
@@ -40,6 +40,6 @@ type ILikeRepository interface {
 
 type ILikeService interface {
 	GetByPostUuid(ctx context.Context, postUuid string, page uint64) (*[]Like, *Pagination, error)
-	Set(ctx context.Context, request *SetLikeRequest) error
-	Unset(ctx context.Context, userUuid string, postUuid string) error
+	Set(ctx context.Context, request *LikeRequest) error
+	Unset(ctx context.Context, request *LikeRequest) error
 }

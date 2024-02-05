@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"time"
 
 	"github.com/PNYwise/like-service/internal/domain"
@@ -26,14 +26,14 @@ func (l *likeRepository) GetByPostUuid(ctx context.Context, postUuid string, pag
 	offset := (page - 1) * limit
 	row, err := l.db.Query(ctx, query, postUuid, offset, limit)
 	if err != nil {
-		log.Fatalf("Error executing query: %v", err)
+		fmt.Printf("Error executing query: %v", err)
 		return nil, 0, err
 	}
 	var likes []domain.Like
 	for row.Next() {
 		var like domain.Like
 		if err := row.Scan(&like.Uuid, &like.UserUuid, &like.PostUuid, &like.CreatedAt, &like.DeletedAt); err != nil {
-			log.Fatalf("Error Scaning query: %v", err)
+			fmt.Printf("Error Scaning query: %v", err)
 			return nil, 0, err
 		}
 		likes = append(likes, like)
@@ -53,7 +53,7 @@ func (l *likeRepository) Set(ctx context.Context, like *domain.Like) error {
 		like.UserUuid, like.PostUuid, time.Now(),
 	).Scan(&like.Uuid, &like.UserUuid, &like.PostUuid, &like.CreatedAt)
 	if err != nil {
-		log.Fatalf("Error executing query: %v", err)
+		fmt.Printf("Error executing query: %v", err)
 		return err
 	}
 	return nil
@@ -64,7 +64,7 @@ func (l *likeRepository) Unset(ctx context.Context, userUuid string, postUuid st
 
 	query := "DELETE FROM likes WHERE user_uuid = $1 AND post_uuid = $2"
 	if _, err := l.db.Exec(ctx, query, userUuid, postUuid); err != nil {
-		log.Fatalf("Error executing query: %v", err)
+		fmt.Printf("Error executing query: %v", err)
 		return err
 	}
 	return nil
@@ -76,12 +76,12 @@ func (l *likeRepository) Exist(ctx context.Context, userUuid string, postUuid st
 	var exist bool
 	row, err := l.db.Query(ctx, query, userUuid, postUuid)
 	if err != nil {
-		log.Fatalf("Error executing query: %v", err)
+		fmt.Printf("Error executing query: %v", err)
 		return false, err
 	}
 	for row.Next() {
 		if err := row.Scan(&exist); err != nil {
-			log.Fatalf("Error Scaning query: %v", err)
+			fmt.Printf("Error Scaning query: %v", err)
 			return false, err
 		}
 	}

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"log"
 
 	"errors"
 
@@ -29,8 +28,7 @@ func NewLikeHandler(extConf *domain.ExtConf, likeService domain.ILikeService) *l
 func (l *likeHandler) GetByPostUuid(ctx context.Context, request *like_service.QueryLikeRequest) (*like_service.LikeResponse, error) {
 	data, pagination, err := l.likeService.GetByPostUuid(ctx, request.GetPostUuid(), request.GetPage())
 	if err != nil {
-		log.Fatal(err)
-		return nil, errors.New("internal server error")
+		return nil, errors.New(err.Error())
 	}
 	response := make([]*like_service.UserLikeResponse, len(*data))
 

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"sync"
 
 	"github.com/PNYwise/like-service/internal/domain"
 	"github.com/PNYwise/like-service/internal/util"
@@ -38,24 +39,61 @@ func (l *likeService) GetByPostUuid(ctx context.Context, postUuid string, page u
 
 // Set implements domain.ILikeService.
 func (l *likeService) Set(ctx context.Context, request *domain.LikeRequest) error {
+	type setValidation struct {
+		types  string
+		result bool
+		errors error
+	}
+
+	var (
+		wg     sync.WaitGroup
+		result = make(chan setValidation, 2)
+		once   sync.Once
+	)
+
 	if errs := util.Validate(request); len(errs) > 0 && errs[0].Error {
 		return util.ValidationErrMsg(errs)
 	}
 
-	postExist, err := l.postRepo.Exist(ctx, request.PostUuid)
-	if err != nil {
-		return errors.New("Internal Server Error")
+	validate := func(types string, defaults bool, existFunc func(ctx context.Context) (bool, error)) {
+		defer wg.Done()
+		exist, err := existFunc(ctx)
+		if err != nil {
+			result <- setValidation{types: types, result: defaults, errors: err}
+			return
+		}
+		result <- setValidation{types: types, result: exist}
 	}
-	if !postExist {
-		return errors.New("Post Not Found")
+	wg.Add(2)
+	go validate("post", false, func(ctx context.Context) (bool, error) {
+		return l.postRepo.Exist(context.Background(), request.PostUuid)
+	})
+	go validate("like", true, func(ctx context.Context) (bool, error) {
+		return l.likeRepo.Exist(ctx, request.UserUuid, request.PostUuid)
+	})
+	go func() {
+		wg.Wait()
+		once.Do(func() {
+			close(result)
+		})
+	}()
+	for res := range result {
+		switch res.types {
+		case "post":
+			if res.errors != nil {
+				return errors.New("Internal Server Error")
+			} else if !res.result {
+				return errors.New("Post Not Found")
+			}
+		case "like":
+			if res.errors != nil {
+				return errors.New("Internal Server Error")
+			} else if res.result {
+				return errors.New("The post has been liked")
+			}
+		}
 	}
-	exist, err := l.likeRepo.Exist(ctx, request.UserUuid, request.PostUuid)
-	if err != nil {
-		return errors.New("Internal Server Error")
-	}
-	if exist {
-		return errors.New("The post has been liked")
-	}
+
 	like := &domain.Like{
 		UserUuid: request.UserUuid,
 		PostUuid: request.PostUuid,
